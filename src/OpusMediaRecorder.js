@@ -120,7 +120,7 @@ class OpusMediaRecorder extends EventTarget {
       workerDir = self.location.href;
     }
     workerDir = workerDir.substr(0, workerDir.lastIndexOf('/')) +
-                '/encoderWorker.umd.js';
+      '/encoderWorker.umd.js';
     // If worker function is imported via <script> tag, make it blob to get URL.
     if (typeof OpusMediaRecorder.encoderWorker === 'function') {
       workerDir = URL.createObjectURL(new Blob([`(${OpusMediaRecorder.encoderWorker})()`]));
@@ -128,8 +128,8 @@ class OpusMediaRecorder extends EventTarget {
 
     // Spawn a encoder worker
     this._workerFactory = typeof encoderWorkerFactory === 'function'
-                            ? encoderWorkerFactory
-                            : _ => new Worker(workerDir);
+      ? encoderWorkerFactory
+      : _ => new Worker(workerDir);
     this._spawnWorker();
   }
 
@@ -191,8 +191,10 @@ class OpusMediaRecorder extends EventTarget {
     this.worker.onerror = (e) => this._onerrorFromWorker(e);
 
     this._postMessageToWorker('loadEncoder',
-                              { mimeType: this._mimeType,
-                                wasmPath: this._wasmPath });
+                              {
+                                mimeType: this._mimeType,
+                                wasmPath: this._wasmPath
+                              });
   }
 
   /**
@@ -226,7 +228,7 @@ class OpusMediaRecorder extends EventTarget {
         let { channelBuffers, length, duration } = message;
         this.worker.postMessage({
           command, channelBuffers, length, duration
-        }, channelBuffers.map(a => a.buffer));
+        });
         break;
 
       case 'getEncodedData':
@@ -262,15 +264,17 @@ class OpusMediaRecorder extends EventTarget {
         // If start() is already called initialize worker
         if (this.state === 'recording') {
           this._postMessageToWorker('init',
-                                    { sampleRate,
+                                    {
+                                      sampleRate,
                                       channelCount,
-                                      bitsPerSecond: this.audioBitsPerSecond});
+                                      bitsPerSecond: this.audioBitsPerSecond
+                                    });
         }
         break;
 
       case 'encodedData':
       case 'lastEncodedData':
-        let data = new Blob(buffers, {'type': this._mimeType});
+        let data = new Blob(buffers, { 'type': this._mimeType });
         eventToPush = new global.Event('dataavailable');
         eventToPush.data = data;
         this.dispatchEvent(eventToPush);
@@ -390,9 +394,11 @@ class OpusMediaRecorder extends EventTarget {
     if (this.workerState === 'readyToInit') {
       const { sampleRate, channelCount } = this;
       this._postMessageToWorker('init',
-                                { sampleRate,
+                                {
+                                  sampleRate,
                                   channelCount,
-                                  bitsPerSecond: this.audioBitsPerSecond });
+                                  bitsPerSecond: this.audioBitsPerSecond
+                                });
     }
   }
 
@@ -479,7 +485,7 @@ class OpusMediaRecorder extends EventTarget {
       return true;
     }
     try {
-      var {type, subtype, codec} = OpusMediaRecorder._parseType(mimeType);
+      var { type, subtype, codec } = OpusMediaRecorder._parseType(mimeType);
     } catch (error) {
       // 2. If not a valid string, return false.
       return false;
@@ -529,11 +535,11 @@ class OpusMediaRecorder extends EventTarget {
       var [, type, subtype, , codec] = mimeType.match(regex);
     } catch (error) {
       if (typeof mimeType === 'string' && !mimeType) {
-        return {type: '', subtype: '', codec: ''};
+        return { type: '', subtype: '', codec: '' };
       }
       return null;
     }
-    return {type, subtype, codec};
+    return { type, subtype, codec };
   }
 }
 
